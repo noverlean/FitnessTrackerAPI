@@ -2,8 +2,8 @@ package noverlin.fitness.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import noverlin.fitness.dto.RegisterRequest;
 import noverlin.fitness.dto.TokenPair;
+import noverlin.fitness.exceptions.custom.ConflictException;
 import noverlin.fitness.jwt.JwtTokenProvider;
 import noverlin.fitness.jwt.TokenHash;
 import noverlin.fitness.model.RefreshToken;
@@ -11,7 +11,6 @@ import noverlin.fitness.model.User;
 import noverlin.fitness.repository.RefreshTokenRepository;
 import noverlin.fitness.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,7 +43,7 @@ public class AuthService {
 
     public TokenPair register(String username, String rawPassword, String deviceId) {
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalStateException("Username already exists");
+            throw new ConflictException("Username already exists");
         }
 
         User user = new User();
