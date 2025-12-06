@@ -1,3 +1,3 @@
-FROM openjdk:17
-COPY target/app.jar app.jar
+FROM eclipse-temurin:21-jdk
+COPY target/fitness-0.0.1-SNAPSHOT.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
