@@ -32,34 +32,51 @@ public class AuthController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Validation error"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized")
+            @ApiResponse(responseCode = "409", description = "User already exists")
     })
     @PostMapping("/register")
     public TokenPair register(@Valid @RequestBody RegisterRequest registerRequest) {
         return auth.register(registerRequest.getUsername(), registerRequest.getPassword(), registerRequest.getDeviceId());
     }
 
+
+    @Operation(
+            summary = "Авторизация пользователя",
+            description = "Авторизует пользователя, если данные валидны - авторизует пользователя, выдавая пару access/refresh токенов"
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Validation error"),
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
-    @Operation(
-            summary = "Авторизация пользователя",
-            description = "Авторизует пользователя, если данные валидны - авторизует пользователя, выдавая пару access/refresh токенов"
-    )
     @PostMapping("/login")
     public TokenPair login(@Valid @RequestBody LoginRequest loginRequest) {
         return auth.login(loginRequest.getUsername(), loginRequest.getPassword(), loginRequest.getDeviceId());
     }
 
-    @Operation(summary = "Обновление токенов", description = "Ротация refresh и выдача новой пары")
+    @Operation(
+            summary = "Обновление токенов",
+            description = "Ротация refresh и выдача новой пары"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Validation error"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @PostMapping("/refresh")
     public TokenPair refresh(@Valid @RequestBody RefreshRequest req) {
         return auth.refresh(req.getRefreshToken());
     }
 
-    @Operation(summary = "Логаут", description = "Отзыв refresh токена. Пользователь выходит из аккаунта")
+    @Operation(
+            summary = "Логаут",
+            description = "Отзыв refresh токена. Пользователь выходит из аккаунта"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Validation error"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @PostMapping("/logout")
     public void logout(@Valid @RequestBody RefreshRequest req) {
         auth.logout(req.getRefreshToken());
