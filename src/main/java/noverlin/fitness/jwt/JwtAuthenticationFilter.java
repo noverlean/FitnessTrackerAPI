@@ -7,26 +7,28 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import noverlin.fitness.model.User;
 import noverlin.fitness.repository.UserRepository;
+import noverlin.fitness.service.CustomUserDetailsService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.file.attribute.UserPrincipal;
 import java.util.List;
 
 @Component
+@AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwt;
     private final UserRepository users;
-
-    public JwtAuthenticationFilter(JwtTokenProvider jwt, UserRepository users) {
-        this.jwt = jwt; this.users = users;
-    }
+    private final CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -44,8 +46,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (user != null) {
                     List<SimpleGrantedAuthority> auths = user.getRoles().stream()
                             .map(SimpleGrantedAuthority::new).toList();
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
                     UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(user.getUsername(), null, auths);
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             } catch (JwtException ignored) {}

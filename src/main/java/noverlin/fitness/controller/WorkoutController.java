@@ -1,5 +1,6 @@
 package noverlin.fitness.controller;
 
+import com.sun.security.auth.UserPrincipal;
 import lombok.AllArgsConstructor;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
-import java.util.List;
 
 @AllArgsConstructor
 @RestController
