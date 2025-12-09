@@ -2,7 +2,7 @@ package noverlin.fitness.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
-import noverlin.fitness.dto.TokenPair;
+import noverlin.fitness.dto.auth.TokenPair;
 import noverlin.fitness.exceptions.custom.ConflictException;
 import noverlin.fitness.jwt.JwtTokenProvider;
 import noverlin.fitness.jwt.TokenHash;

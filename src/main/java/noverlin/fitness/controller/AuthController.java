@@ -1,17 +1,15 @@
 package noverlin.fitness.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import noverlin.fitness.dto.LoginRequest;
-import noverlin.fitness.dto.RefreshRequest;
-import noverlin.fitness.dto.RegisterRequest;
-import noverlin.fitness.dto.TokenPair;
+import noverlin.fitness.dto.auth.LoginRequest;
+import noverlin.fitness.dto.auth.RefreshRequest;
+import noverlin.fitness.dto.auth.RegisterRequest;
+import noverlin.fitness.dto.auth.TokenPair;
 import noverlin.fitness.service.AuthService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
