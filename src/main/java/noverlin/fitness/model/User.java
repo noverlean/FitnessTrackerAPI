@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -24,4 +25,7 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "role")
     private Set<String> roles = Set.of("USER");
+
+    @OneToMany(mappedBy = "user")
+    private List<Workout> workouts;
 }
