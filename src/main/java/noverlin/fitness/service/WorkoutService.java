@@ -3,11 +3,13 @@ package noverlin.fitness.service;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import noverlin.fitness.dto.workout.WorkoutResponse;
+import noverlin.fitness.exceptions.custom.WorkoutWasNotFound;
 import noverlin.fitness.mapper.WorkoutMapper;
 import noverlin.fitness.model.Workout;
 import noverlin.fitness.model.WorkoutType;
 import noverlin.fitness.repository.UserRepository;
 import noverlin.fitness.repository.WorkoutRepository;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -60,5 +62,11 @@ public class WorkoutService {
 
         Page<Workout> workouts = workoutRepository.findAll(spec, pageable);
         return workouts.map(workoutMapper::toDto);
+    }
+
+    public WorkoutResponse findById(Long id, String username) {
+        Workout workout = workoutRepository.findByIdForUserWithUsername(id, username)
+                .orElseThrow(WorkoutWasNotFound::new);
+        return workoutMapper.toDto(workout);
     }
 }
