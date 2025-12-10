@@ -1,10 +1,12 @@
 package noverlin.fitness.service;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
 import noverlin.fitness.exceptions.custom.WorkoutWasNotFound;
 import noverlin.fitness.mapper.WorkoutMapper;
+import noverlin.fitness.model.User;
 import noverlin.fitness.model.Workout;
 import noverlin.fitness.model.WorkoutType;
 import noverlin.fitness.repository.UserRepository;
@@ -13,6 +15,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -69,4 +72,16 @@ public class WorkoutService {
                 .orElseThrow(WorkoutWasNotFound::new);
         return workoutMapper.toDto(workout);
     }
+
+    public WorkoutResponse createForUser(String username, WorkoutRequest workoutRequest) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь с таким именем не существует"));
+
+        Workout newWorkout = workoutMapper.toModel(workoutRequest);
+        newWorkout.setUser(user);
+        workoutRepository.save(newWorkout);
+
+        return workoutMapper.toDto(newWorkout);
+    }
+
 }

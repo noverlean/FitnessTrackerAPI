@@ -43,4 +43,9 @@ public class WorkoutController {
         String username = userDetails.getUsername();
         return workoutService.findById(id, username);
     }
+
+    @PostMapping
+    public WorkoutResponse createWorkout(@RequestBody WorkoutRequest workoutRequest, @AuthenticationPrincipal UserDetails userDetails) {
+        return workoutService.createForUser(userDetails.getUsername(), workoutRequest);
+    }
 }
