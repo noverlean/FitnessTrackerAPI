@@ -48,4 +48,9 @@ public class WorkoutController {
     public WorkoutResponse createWorkout(@RequestBody WorkoutRequest workoutRequest, @AuthenticationPrincipal UserDetails userDetails) {
         return workoutService.createForUser(userDetails.getUsername(), workoutRequest);
     }
+
+    @PutMapping("/{id}")
+    public WorkoutResponse updateWorkout(@PathVariable Long id, @RequestBody WorkoutRequest workoutRequest, @AuthenticationPrincipal UserDetails userDetails) {
+        return workoutService.update(id, userDetails.getUsername(), workoutRequest);
+    }
 }

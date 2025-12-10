@@ -15,6 +15,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -82,6 +83,20 @@ public class WorkoutService {
         workoutRepository.save(newWorkout);
 
         return workoutMapper.toDto(newWorkout);
+    }
+
+    public WorkoutResponse update(Long id, String username, WorkoutRequest workoutRequest) {
+        Workout workout = workoutRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Тренировка с таким идентификатором не существует")); //todo: сделать типы исключений под каждый сценарий
+
+        if (!workout.getUser().getUsername().equals(username)) {
+            throw new BadCredentialsException("Данная тренировка не имеет отношения к авторизованному пользователю");
+        }
+
+        workoutMapper.updateModelFromDto(workoutRequest, workout);
+        workoutRepository.save(workout);
+
+        return workoutMapper.toDto(workout);
     }
 
 }
