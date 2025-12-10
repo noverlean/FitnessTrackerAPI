@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import noverlin.fitness.dto.auth.TokenPair;
 import noverlin.fitness.exceptions.custom.ConflictException;
+import noverlin.fitness.exceptions.custom.token.exceptions.InvalidRefreshTokenException;
+import noverlin.fitness.exceptions.custom.notFound.exceptions.UserNotFoundException;
 import noverlin.fitness.jwt.JwtTokenProvider;
 import noverlin.fitness.jwt.TokenHash;
 import noverlin.fitness.model.RefreshToken;
@@ -57,7 +59,7 @@ public class AuthService {
 
     public TokenPair login(String username, String rawPassword, String deviceId) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
+                .orElseThrow(UserNotFoundException::new);
 
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash()))
             throw new BadCredentialsException("Invalid credentials");
@@ -73,13 +75,13 @@ public class AuthService {
 
         String hash = tokenHash.hash(refreshToken);
         RefreshToken stored = refreshTokenRepository.findByToken(hash)
-                .orElseThrow(() -> new BadCredentialsException("Refresh not found"));
+                .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token not found"));
 
         if (stored.isRevoked() || stored.getExpiresAt().isBefore(Instant.now()))
-            throw new BadCredentialsException("Refresh invalid");
+            throw new InvalidRefreshTokenException();
 
         if (!stored.getUser().getId().equals(userId) || !stored.getDeviceId().equals(deviceId))
-            throw new BadCredentialsException("Refresh mismatched");
+            throw new InvalidRefreshTokenException("Refresh token mismatched");
 
         stored.setRevoked(true);
         stored.setReplacedAt(Instant.now());

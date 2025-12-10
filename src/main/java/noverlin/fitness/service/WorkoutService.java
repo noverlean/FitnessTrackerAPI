@@ -4,19 +4,18 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
-import noverlin.fitness.exceptions.custom.WorkoutWasNotFound;
+import noverlin.fitness.exceptions.custom.access.exceptions.UserHasNotAccessRulesException;
+import noverlin.fitness.exceptions.custom.notFound.exceptions.UserNotFoundException;
+import noverlin.fitness.exceptions.custom.notFound.exceptions.WorkoutNotFoundException;
 import noverlin.fitness.mapper.WorkoutMapper;
 import noverlin.fitness.model.User;
 import noverlin.fitness.model.Workout;
 import noverlin.fitness.model.WorkoutType;
 import noverlin.fitness.repository.UserRepository;
 import noverlin.fitness.repository.WorkoutRepository;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -70,13 +69,13 @@ public class WorkoutService {
 
     public WorkoutResponse findById(Long id, String username) {
         Workout workout = workoutRepository.findByIdForUserWithUsername(id, username)
-                .orElseThrow(WorkoutWasNotFound::new);
+                .orElseThrow(WorkoutNotFoundException::new);
         return workoutMapper.toDto(workout);
     }
 
     public WorkoutResponse createForUser(String username, WorkoutRequest workoutRequest) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь с таким именем не существует"));
+                .orElseThrow(UserNotFoundException::new);
 
         Workout newWorkout = workoutMapper.toModel(workoutRequest);
         newWorkout.setUser(user);
@@ -87,10 +86,10 @@ public class WorkoutService {
 
     public WorkoutResponse update(Long id, String username, WorkoutRequest workoutRequest) {
         Workout workout = workoutRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("Тренировка с таким идентификатором не существует")); //todo: сделать типы исключений под каждый сценарий
+                .orElseThrow(WorkoutNotFoundException::new);
 
         if (!workout.getUser().getUsername().equals(username)) {
-            throw new BadCredentialsException("Данная тренировка не имеет отношения к авторизованному пользователю");
+            throw new UserHasNotAccessRulesException();
         }
 
         workoutMapper.updateModelFromDto(workoutRequest, workout);

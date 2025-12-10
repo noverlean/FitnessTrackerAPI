@@ -1,6 +1,8 @@
 package noverlin.fitness.exceptions.custom;
 
-public class ConflictException extends RuntimeException {
+import noverlin.fitness.exceptions.CustomException;
+
+public class ConflictException extends CustomException {
     public ConflictException(String message) {
         super(message);
     }
