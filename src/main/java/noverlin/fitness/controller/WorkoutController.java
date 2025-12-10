@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -52,5 +53,11 @@ public class WorkoutController {
     @PutMapping("/{id}")
     public WorkoutResponse updateWorkout(@PathVariable Long id, @RequestBody WorkoutRequest workoutRequest, @AuthenticationPrincipal UserDetails userDetails) {
         return workoutService.update(id, userDetails.getUsername(), workoutRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteWorkout(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        workoutService.delete(id, userDetails.getUsername());
+        return ResponseEntity.noContent().build();
     }
 }

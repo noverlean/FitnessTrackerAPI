@@ -98,4 +98,14 @@ public class WorkoutService {
         return workoutMapper.toDto(workout);
     }
 
+    public void delete(Long id, String username) {
+        Workout workout = workoutRepository.findById(id)
+                .orElseThrow(WorkoutNotFoundException::new);
+
+        if (!workout.getUser().getUsername().equals(username)) {
+            throw new UserHasNotAccessRulesException();
+        }
+
+        workoutRepository.delete(workout);
+    }
 }
