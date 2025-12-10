@@ -12,7 +12,5 @@ public interface WorkoutMapper {
     WorkoutResponse toDto(Workout workout);
     Workout toModel(WorkoutRequest workoutResponse);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "user", ignore = true)
     void updateModelFromDto(WorkoutRequest dto, @MappingTarget Workout workout);
 }

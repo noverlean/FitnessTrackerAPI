@@ -1,11 +1,14 @@
 package noverlin.fitness.dto.media;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.time.Instant;
 
 @Data
+@Accessors(chain = true)
 public class MediaResponse {
 
     @Schema(description = "Идентификатор медиа", example = "23")

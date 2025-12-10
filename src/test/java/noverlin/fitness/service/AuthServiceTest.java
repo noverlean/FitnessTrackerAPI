@@ -6,6 +6,8 @@ import io.jsonwebtoken.Jwts;
 import noverlin.fitness.TestDataFactory;
 import noverlin.fitness.dto.auth.TokenPair;
 import noverlin.fitness.exceptions.custom.ConflictException;
+import noverlin.fitness.exceptions.custom.notFound.exceptions.UserNotFoundException;
+import noverlin.fitness.exceptions.custom.token.exceptions.InvalidRefreshTokenException;
 import noverlin.fitness.jwt.JwtTokenProvider;
 import noverlin.fitness.jwt.TokenHash;
 import noverlin.fitness.model.RefreshToken;
@@ -113,7 +115,7 @@ public class AuthServiceTest {
     void login_userWithUsernameNotFound_throwsBadCredantials() {
         when(userRepository.findByUsername("bad-username")).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(BadCredentialsException.class, () -> authService.login("username", "raw-password", "device-id"));
+        Assertions.assertThrows(UserNotFoundException.class, () -> authService.login("username", "raw-password", "device-id"));
     }
 
     @Test
@@ -148,7 +150,7 @@ public class AuthServiceTest {
         when(tokenHash.hash(any())).thenReturn("hashed-refresh");
         when(refreshTokenRepository.findByToken("hashed-refresh")).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(BadCredentialsException.class, () -> authService.refresh("refresh-token"));
+        Assertions.assertThrows(InvalidRefreshTokenException.class, () -> authService.refresh("refresh-token"));
     }
 
     @Test
@@ -162,7 +164,7 @@ public class AuthServiceTest {
         when(tokenHash.hash(any())).thenReturn("hashed-refresh");
         when(refreshTokenRepository.findByToken(any())).thenReturn(Optional.of(refreshToken));
 
-        Assertions.assertThrows(BadCredentialsException.class, () -> authService.refresh("refresh-token"));
+        Assertions.assertThrows(InvalidRefreshTokenException.class, () -> authService.refresh("refresh-token"));
     }
 
     @Test
@@ -176,7 +178,7 @@ public class AuthServiceTest {
         when(tokenHash.hash(any())).thenReturn("hashed-refresh");
         when(refreshTokenRepository.findByToken(any())).thenReturn(Optional.of(refreshToken));
 
-        Assertions.assertThrows(BadCredentialsException.class, () -> authService.refresh("refresh-token"));
+        Assertions.assertThrows(InvalidRefreshTokenException.class, () -> authService.refresh("refresh-token"));
     }
 
     @Test
@@ -190,7 +192,7 @@ public class AuthServiceTest {
         when(tokenHash.hash(any())).thenReturn("hashed-refresh");
         when(refreshTokenRepository.findByToken(any())).thenReturn(Optional.of(refreshToken));
 
-        Assertions.assertThrows(BadCredentialsException.class, () -> authService.refresh("refresh-token"));
+        Assertions.assertThrows(InvalidRefreshTokenException.class, () -> authService.refresh("refresh-token"));
     }
 
     @Test
@@ -204,7 +206,7 @@ public class AuthServiceTest {
         when(tokenHash.hash(any())).thenReturn("hashed-refresh");
         when(refreshTokenRepository.findByToken(any())).thenReturn(Optional.of(refreshToken));
 
-        Assertions.assertThrows(BadCredentialsException.class, () -> authService.refresh("refresh-token"));
+        Assertions.assertThrows(InvalidRefreshTokenException.class, () -> authService.refresh("refresh-token"));
     }
 
     @Test
