@@ -9,7 +9,7 @@ import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MapperTest {
+class MediaMapperTest {
 
     private final MediaMapper mediaMapper = Mappers.getMapper(MediaMapper.class);
 

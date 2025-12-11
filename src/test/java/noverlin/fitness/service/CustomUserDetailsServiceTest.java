@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

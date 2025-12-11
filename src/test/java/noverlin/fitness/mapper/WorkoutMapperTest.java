@@ -1,9 +1,7 @@
 package noverlin.fitness.mapper;
 
-import noverlin.fitness.dto.media.MediaResponse;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
-import noverlin.fitness.model.Media;
 import noverlin.fitness.model.User;
 import noverlin.fitness.model.Workout;
 import noverlin.fitness.model.WorkoutType;
