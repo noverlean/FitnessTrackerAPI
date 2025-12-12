@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.media.MediaResponse;
 import noverlin.fitness.service.MediaService;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +18,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/media")
 public class MediaController {
 
-    MediaService mediaService;
+    private final MediaService mediaService;
 
     @Operation(
             summary = "Загрузка медиа с результатами тренировки",

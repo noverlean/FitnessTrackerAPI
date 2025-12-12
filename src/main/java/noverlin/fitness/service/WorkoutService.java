@@ -2,6 +2,7 @@ package noverlin.fitness.service;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
 import noverlin.fitness.exceptions.custom.access.UserHasNotAccessRulesException;
@@ -20,13 +21,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class WorkoutService {
 
-    private WorkoutRepository workoutRepository;
-    private UserRepository userRepository;
-    private WorkoutMapper workoutMapper;
+    private final WorkoutRepository workoutRepository;
+    private final UserRepository userRepository;
+    private final WorkoutMapper workoutMapper;
 
     public Page<WorkoutResponse> search(
             @NotNull String username,

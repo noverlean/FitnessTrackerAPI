@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import noverlin.fitness.model.User;
 import noverlin.fitness.repository.UserRepository;
 import noverlin.fitness.service.CustomUserDetailsService;
@@ -23,7 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwt;
     private final UserRepository users;

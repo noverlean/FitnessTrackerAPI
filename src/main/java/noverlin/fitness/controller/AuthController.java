@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.auth.LoginRequest;
 import noverlin.fitness.dto.auth.RefreshRequest;
 import noverlin.fitness.dto.auth.RegisterRequest;
@@ -17,11 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Auth", description = "API пользовательской авторизации")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService auth;
-
-    public AuthController(AuthService auth) { this.auth = auth; }
 
     @Operation(
             summary = "Регистрация пользователя",
