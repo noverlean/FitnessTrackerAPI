@@ -18,20 +18,20 @@ public class WorkoutRequest {
     @Schema(description = "Название тренировки", example = "Утренняя пробежка")
     @NotBlank(message = "Title cannot be blank")
     @Size(max = 100)
-    String title;
+    private String title;
 
     @Schema(description = "Время начала тренировки", example = "2025-12-09T12:15:00Z")
     @PastOrPresent(message = "Date must be in the past or today")
-    Instant date;
+    private Instant date;
 
     @Schema(description = "Продолжительность тренировки в миллисекундах", example = "3600000")
     @Positive(message = "Duration must be > 0")
-    Long duration;
+    private Long duration;
 
     @Schema(description = "Количестко сожженых калорий", example = "434")
     @Positive(message = "Calories must be > 0")
-    Long calories;
+    private Long calories;
 
     @Schema(description = "Тип тренировки", example = "CARDIO")
-    WorkoutType type;
+    private WorkoutType type;
 }

@@ -12,20 +12,20 @@ import java.time.Instant;
 public class WorkoutResponse {
 
     @Schema(description = "Идентификатор тренировки", example = "23")
-    Long id;
+    private Long id;
 
     @Schema(description = "Название тренировки", example = "Утренняя пробежка")
-    String title;
+    private String title;
 
     @Schema(description = "Время начала тренировки", example = "2025-12-09T12:15:00Z")
-    Instant date;
+    private Instant date;
 
     @Schema(description = "Продолжительность тренировки в миллисекундах", example = "3600000")
-    Long duration;
+    private Long duration;
 
     @Schema(description = "Количестко сожженых калорий", example = "434")
-    Long calories;
+    private Long calories;
 
     @Schema(description = "Тип тренировки", example = "CARDIO")
-    WorkoutType type;
+    private WorkoutType type;
 }
