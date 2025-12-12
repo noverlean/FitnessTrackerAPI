@@ -1,7 +1,7 @@
 package noverlin.fitness.service;
 
 import noverlin.fitness.dto.media.MediaResponse;
-import noverlin.fitness.exceptions.custom.notFound.exceptions.UserNotFoundException;
+import noverlin.fitness.exceptions.custom.notFound.UserNotFoundException;
 import noverlin.fitness.mapper.MediaMapper;
 import noverlin.fitness.model.Media;
 import noverlin.fitness.model.User;

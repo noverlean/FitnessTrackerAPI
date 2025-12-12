@@ -1,6 +1,4 @@
-package noverlin.fitness.exceptions.custom.token.exceptions;
-
-import noverlin.fitness.exceptions.custom.token.TokenException;
+package noverlin.fitness.exceptions.custom.token;
 
 public class RefreshTokenNotFoundException extends TokenException {
     public RefreshTokenNotFoundException(String message) {

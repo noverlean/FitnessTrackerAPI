@@ -1,6 +1,4 @@
-package noverlin.fitness.exceptions.custom.notFound.exceptions;
-
-import noverlin.fitness.exceptions.custom.notFound.NotFoundException;
+package noverlin.fitness.exceptions.custom.notFound;
 
 public class WorkoutNotFoundException extends NotFoundException {
     public WorkoutNotFoundException() {

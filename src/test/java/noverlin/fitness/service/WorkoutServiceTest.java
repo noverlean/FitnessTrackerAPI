@@ -2,9 +2,9 @@ package noverlin.fitness.service;
 
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
-import noverlin.fitness.exceptions.custom.access.exceptions.UserHasNotAccessRulesException;
-import noverlin.fitness.exceptions.custom.notFound.exceptions.UserNotFoundException;
-import noverlin.fitness.exceptions.custom.notFound.exceptions.WorkoutNotFoundException;
+import noverlin.fitness.exceptions.custom.access.UserHasNotAccessRulesException;
+import noverlin.fitness.exceptions.custom.notFound.UserNotFoundException;
+import noverlin.fitness.exceptions.custom.notFound.WorkoutNotFoundException;
 import noverlin.fitness.mapper.WorkoutMapper;
 import noverlin.fitness.model.User;
 import noverlin.fitness.model.Workout;

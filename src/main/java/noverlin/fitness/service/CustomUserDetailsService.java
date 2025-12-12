@@ -1,7 +1,7 @@
 package noverlin.fitness.service;
 
 import lombok.RequiredArgsConstructor;
-import noverlin.fitness.exceptions.custom.notFound.exceptions.UserNotFoundException;
+import noverlin.fitness.exceptions.custom.notFound.UserNotFoundException;
 import noverlin.fitness.model.User;
 import noverlin.fitness.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
