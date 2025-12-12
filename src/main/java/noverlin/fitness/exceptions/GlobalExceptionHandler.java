@@ -18,18 +18,10 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.time.Instant;
 
+import static noverlin.fitness.exceptions.ErrorBuilder.buildError;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    private ErrorResponse buildError(HttpStatus status, String code, String message, HttpServletRequest request) {
-        return new ErrorResponse(
-                Instant.now(),
-                status.value(),
-                code,
-                message,
-                request.getRequestURI()
-        );
-    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleInvalidJson(HttpMessageNotReadableException ex, WebRequest request) {
