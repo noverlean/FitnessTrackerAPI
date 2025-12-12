@@ -10,6 +10,10 @@ import noverlin.fitness.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -44,11 +48,22 @@ class MediaServiceTest {
         user = new User();
         user.setId(1L);
         user.setUsername("testuser");
+
+        SecurityContextHolder.clearContext();
+        UserDetails userDetails = org.springframework.security.core.userdetails.User
+                .withUsername("testuser")
+                .password("password")
+                .authorities("ROLE_USER")
+                .build();
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
     @Test
     void save_ShouldSaveMediaAndReturnResponse() throws IOException {
         String filename = "progress.jpg";
+
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
         when(multipartFile.getOriginalFilename()).thenReturn(filename);
 
@@ -65,7 +80,7 @@ class MediaServiceTest {
         when(mediaRepository.save(any(Media.class))).thenReturn(media);
         when(mediaMapper.toDto(any(Media.class))).thenReturn(expectedResponse);
 
-        MediaResponse response = mediaService.save(multipartFile, "testuser");
+        MediaResponse response = mediaService.save(multipartFile);
 
         assertNotNull(response);
         assertEquals("progress", response.getTitle());
@@ -77,14 +92,15 @@ class MediaServiceTest {
         verify(multipartFile).transferTo(Path.of("uploads/testuser/" + filename));
     }
 
+
     @Test
     void save_ShouldThrowUserNotFoundException_WhenUserDoesNotExist() {
-        when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
-                () -> mediaService.save(multipartFile, "unknown"));
+                () -> mediaService.save(multipartFile));
 
-        verify(userRepository).findByUsername("unknown");
+        verify(userRepository).findByUsername("testuser");
         verifyNoInteractions(mediaRepository, mediaMapper);
     }
 
@@ -96,7 +112,7 @@ class MediaServiceTest {
                 .when(multipartFile).transferTo(any(Path.class));
 
         assertThrows(IOException.class,
-                () -> mediaService.save(multipartFile, "testuser"));
+                () -> mediaService.save(multipartFile));
 
         verify(userRepository).findByUsername("testuser");
         verify(multipartFile).transferTo(any(Path.class));

@@ -3,6 +3,7 @@ package noverlin.fitness.service;
 import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.media.MediaResponse;
 import noverlin.fitness.exceptions.custom.notFound.UserNotFoundException;
+import noverlin.fitness.jwt.CurrentUserProvider;
 import noverlin.fitness.mapper.MediaMapper;
 import noverlin.fitness.model.Media;
 import noverlin.fitness.model.User;
@@ -24,7 +25,8 @@ public class MediaService {
     private final UserRepository userRepository;
     private final MediaMapper mediaMapper;
 
-    public MediaResponse save(MultipartFile file, String username) throws IOException {
+    public MediaResponse save(MultipartFile file) throws IOException {
+        String username = CurrentUserProvider.getCurrentUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(UserNotFoundException::new);
 

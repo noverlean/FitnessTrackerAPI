@@ -10,8 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/workouts")
@@ -29,7 +27,6 @@ public interface WorkoutApi {
     })
     @GetMapping
     Page<WorkoutResponse> getAll(
-            @AuthenticationPrincipal UserDetails userDetails,
             WorkoutSearchRequest searchRequest,
             @PageableDefault(size = 5) Pageable pageable
     );
@@ -45,7 +42,7 @@ public interface WorkoutApi {
             @ApiResponse(responseCode = "404", description = "Not Found")
     })
     @GetMapping("/{id}")
-    WorkoutResponse getWorkoutById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails);
+    WorkoutResponse getWorkoutById(@PathVariable Long id);
 
     @Operation(
             summary = "Создать тренировку",
@@ -58,10 +55,7 @@ public interface WorkoutApi {
             @ApiResponse(responseCode = "404", description = "Not Found")
     })
     @PostMapping
-    WorkoutResponse createWorkout(
-            @RequestBody WorkoutRequest workoutRequest,
-            @AuthenticationPrincipal UserDetails userDetails
-    );
+    WorkoutResponse createWorkout(@RequestBody WorkoutRequest workoutRequest);
 
     @Operation(
             summary = "Обновить данные тренировки",
@@ -74,11 +68,7 @@ public interface WorkoutApi {
             @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @PutMapping("/{id}")
-    WorkoutResponse updateWorkout(
-            @PathVariable Long id,
-            @RequestBody WorkoutRequest workoutRequest,
-            @AuthenticationPrincipal UserDetails userDetails
-    );
+    WorkoutResponse updateWorkout(@PathVariable Long id, @RequestBody WorkoutRequest workoutRequest);
 
     @Operation(
             summary = "Удалить тренировку",
@@ -91,5 +81,5 @@ public interface WorkoutApi {
             @ApiResponse(responseCode = "403", description = "Forbidden")
     })
     @DeleteMapping("/{id}")
-    ResponseEntity<Object> deleteWorkout(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails);
+    ResponseEntity<Object> deleteWorkout(@PathVariable Long id);
 }

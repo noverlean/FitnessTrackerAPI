@@ -1,25 +1,16 @@
 package noverlin.fitness.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import noverlin.fitness.api.WorkoutApi;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
 import noverlin.fitness.dto.workout.WorkoutSearchRequest;
-import noverlin.fitness.model.WorkoutType;
 import noverlin.fitness.service.WorkoutService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Instant;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,33 +20,30 @@ public class WorkoutController implements WorkoutApi {
 
     @Override
     public Page<WorkoutResponse> getAll(
-            @AuthenticationPrincipal UserDetails userDetails,
             WorkoutSearchRequest searchRequest,
             @PageableDefault(size = 5) Pageable pageable
     ) {
-        String username = userDetails.getUsername();
-        return workoutService.search(username, searchRequest, pageable);
+        return workoutService.search(searchRequest, pageable);
     }
 
     @Override
-    public WorkoutResponse getWorkoutById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
-        String username = userDetails.getUsername();
-        return workoutService.findById(id, username);
+    public WorkoutResponse getWorkoutById(@PathVariable Long id) {
+        return workoutService.findById(id);
     }
 
     @Override
-    public WorkoutResponse createWorkout(@RequestBody WorkoutRequest workoutRequest, @AuthenticationPrincipal UserDetails userDetails) {
-        return workoutService.createForUser(userDetails.getUsername(), workoutRequest);
+    public WorkoutResponse createWorkout(@RequestBody WorkoutRequest workoutRequest) {
+        return workoutService.createForUser(workoutRequest);
     }
 
     @Override
-    public WorkoutResponse updateWorkout(@PathVariable Long id, @RequestBody WorkoutRequest workoutRequest, @AuthenticationPrincipal UserDetails userDetails) {
-        return workoutService.update(id, userDetails.getUsername(), workoutRequest);
+    public WorkoutResponse updateWorkout(@PathVariable Long id, @RequestBody WorkoutRequest workoutRequest) {
+        return workoutService.update(id, workoutRequest);
     }
 
     @Override
-    public ResponseEntity<Object> deleteWorkout(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
-        workoutService.delete(id, userDetails.getUsername());
+    public ResponseEntity<Object> deleteWorkout(@PathVariable Long id) {
+        workoutService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

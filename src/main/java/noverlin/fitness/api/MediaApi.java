@@ -5,8 +5,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import noverlin.fitness.dto.media.MediaResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,8 +26,5 @@ public interface MediaApi {
             @ApiResponse(responseCode = "404", description = "Not Found")
     })
     @PostMapping
-    ResponseEntity<MediaResponse> uploadMedia(
-            @RequestParam("file") MultipartFile file,
-            @AuthenticationPrincipal UserDetails userDetails
-    ) throws IOException;
+    ResponseEntity<MediaResponse> uploadMedia(@RequestParam("file") MultipartFile file) throws IOException;
 }
