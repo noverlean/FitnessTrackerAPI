@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
+import noverlin.fitness.dto.workout.WorkoutSearchRequest;
 import noverlin.fitness.model.WorkoutType;
 import noverlin.fitness.service.WorkoutService;
 import org.springframework.data.domain.Page;
@@ -39,15 +40,11 @@ public class WorkoutController {
     @GetMapping
     public Page<WorkoutResponse> getAll(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam(required = false) WorkoutType type,
-            @RequestParam(required = false) Instant fromDate,
-            @RequestParam(required = false) Instant toDate,
-            @RequestParam(required = false) Long minDuration,
-            @RequestParam(required = false) Long maxDuration,
+            WorkoutSearchRequest searchRequest,
             @PageableDefault(size = 5) Pageable pageable
     ) {
         String username = userDetails.getUsername();
-        return workoutService.search(username, type, fromDate, toDate, minDuration, maxDuration, pageable);
+        return workoutService.search(username, searchRequest, pageable);
     }
 
     @Operation(

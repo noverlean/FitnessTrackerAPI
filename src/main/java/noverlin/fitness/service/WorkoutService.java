@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
+import noverlin.fitness.dto.workout.WorkoutSearchRequest;
 import noverlin.fitness.exceptions.custom.access.UserHasNotAccessRulesException;
 import noverlin.fitness.exceptions.custom.notFound.UserNotFoundException;
 import noverlin.fitness.exceptions.custom.notFound.WorkoutNotFoundException;
@@ -31,11 +32,7 @@ public class WorkoutService {
 
     public Page<WorkoutResponse> search(
             @NotNull String username,
-            WorkoutType type,
-            Instant fromDate,
-            Instant toDate,
-            Long minDuration,
-            Long maxDuration,
+            WorkoutSearchRequest searchRequest,
             Pageable pageable
     ) {
         Specification<Workout> spec = Specification.where(
@@ -43,25 +40,25 @@ public class WorkoutService {
                         criteriaBuilder.equal(root.get("user").get("username"), username)
         );
 
-        if (type != null) {
+        if (searchRequest.getType() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("type"), type));
+                    criteriaBuilder.equal(root.get("type"), searchRequest.getType()));
         }
-        if (fromDate != null) {
+        if (searchRequest.getFromDate() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.greaterThanOrEqualTo(root.get("date"), fromDate));
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("date"), searchRequest.getFromDate()));
         }
-        if (toDate != null) {
+        if (searchRequest.getToDate() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.lessThanOrEqualTo(root.get("date"), toDate));
+                    criteriaBuilder.lessThanOrEqualTo(root.get("date"), searchRequest.getToDate()));
         }
-        if (minDuration != null) {
+        if (searchRequest.getMinDuration() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.greaterThanOrEqualTo(root.get("duration"), minDuration));
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("duration"), searchRequest.getMinDuration()));
         }
-        if (maxDuration != null) {
+        if (searchRequest.getMaxDuration() != null) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.lessThanOrEqualTo(root.get("duration"), maxDuration));
+                    criteriaBuilder.lessThanOrEqualTo(root.get("duration"), searchRequest.getMaxDuration()));
         }
 
         Page<Workout> workouts = workoutRepository.findAll(spec, pageable);
