@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import noverlin.fitness.api.WorkoutApi;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
 import noverlin.fitness.dto.workout.WorkoutSearchRequest;
@@ -22,22 +23,11 @@ import java.time.Instant;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/workouts")
-public class WorkoutController {
+public class WorkoutController implements WorkoutApi {
 
     private final WorkoutService workoutService;
 
-    @Operation(
-            summary = "Расширенный поиск",
-            description = "возвращает список пользовательских тренировок в пагирированном формате с возможностью " +
-                    "фильтрации по типу нагрузок, дате или продолжительности, а так же в отсортированном формате"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "Validation error"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized")
-    })
-    @GetMapping
+    @Override
     public Page<WorkoutResponse> getAll(
             @AuthenticationPrincipal UserDetails userDetails,
             WorkoutSearchRequest searchRequest,
@@ -47,63 +37,23 @@ public class WorkoutController {
         return workoutService.search(username, searchRequest, pageable);
     }
 
-    @Operation(
-            summary = "Получить тренировку по ID",
-            description = "Возвращает тренировку по ее идентификатору учитывая принадлежность авторизованному пользователю"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "Validation error"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "404", description = "Not Found")
-    })
-    @GetMapping("/{id}")
+    @Override
     public WorkoutResponse getWorkoutById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
         return workoutService.findById(id, username);
     }
 
-    @Operation(
-            summary = "Создать тренировку",
-            description = "Создает тренировку авторизованному пользователю"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "Validation error"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "404", description = "Not Found")
-    })
-    @PostMapping
+    @Override
     public WorkoutResponse createWorkout(@RequestBody WorkoutRequest workoutRequest, @AuthenticationPrincipal UserDetails userDetails) {
         return workoutService.createForUser(userDetails.getUsername(), workoutRequest);
     }
 
-    @Operation(
-            summary = "Обновить данные тренировки",
-            description = "Обновить данные тренировки для авторизованного пользователя по ее идентификатору"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "Validation error"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden")
-    })
-    @PutMapping("/{id}")
+    @Override
     public WorkoutResponse updateWorkout(@PathVariable Long id, @RequestBody WorkoutRequest workoutRequest, @AuthenticationPrincipal UserDetails userDetails) {
         return workoutService.update(id, userDetails.getUsername(), workoutRequest);
     }
 
-    @Operation(
-            summary = "Удалить тренировку",
-            description = "Удаляет тренировку для авторизованного пользователя по ее идентификатору"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "Validation error"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden")
-    })
-    @DeleteMapping("/{id}")
+    @Override
     public ResponseEntity<Object> deleteWorkout(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         workoutService.delete(id, userDetails.getUsername());
         return ResponseEntity.noContent().build();
