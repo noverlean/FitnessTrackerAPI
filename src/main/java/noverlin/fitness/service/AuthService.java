@@ -2,6 +2,7 @@ package noverlin.fitness.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.auth.TokenPair;
 import noverlin.fitness.exceptions.custom.ConflictException;
@@ -33,6 +34,7 @@ public class AuthService {
     @Value(value = "${jwt.refresh.expiration}")
     private Long refreshExpMillis;
 
+    @Transactional(rollbackOn = Exception.class)
     public TokenPair register(String username, String rawPassword, String deviceId) {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new ConflictException("Username already exists");
@@ -57,6 +59,7 @@ public class AuthService {
         return getTokenPair(deviceId, user);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public TokenPair refresh(String refreshToken) {
         Jws<Claims> jws = jwtTokenProvider.parse(refreshToken);
         Claims claims = jws.getBody();

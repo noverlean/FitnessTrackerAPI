@@ -1,5 +1,6 @@
 package noverlin.fitness.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.media.MediaResponse;
 import noverlin.fitness.exceptions.custom.notFound.UserNotFoundException;
@@ -25,6 +26,7 @@ public class MediaService {
     private final UserRepository userRepository;
     private final MediaMapper mediaMapper;
 
+    @Transactional(rollbackOn = Exception.class)
     public MediaResponse save(MultipartFile file) throws IOException {
         String username = CurrentUserProvider.getCurrentUsername();
         User user = userRepository.findByUsername(username)

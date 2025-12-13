@@ -1,5 +1,6 @@
 package noverlin.fitness.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
@@ -43,6 +44,7 @@ public class WorkoutService {
         return workoutMapper.toDto(workout);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public WorkoutResponse createForUser(WorkoutRequest workoutRequest) {
         String username = CurrentUserProvider.getCurrentUsername();
         User user = userRepository.findByUsername(username)
@@ -55,6 +57,7 @@ public class WorkoutService {
         return workoutMapper.toDto(newWorkout);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public WorkoutResponse update(Long id, WorkoutRequest workoutRequest) {
         String username = CurrentUserProvider.getCurrentUsername();
         Workout workout = workoutRepository.findById(id)
@@ -70,6 +73,7 @@ public class WorkoutService {
         return workoutMapper.toDto(workout);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public void delete(Long id) {
         String username = CurrentUserProvider.getCurrentUsername();
         Workout workout = workoutRepository.findById(id)
