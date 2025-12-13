@@ -1,6 +1,5 @@
 package noverlin.fitness.service;
 
-import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
@@ -14,6 +13,7 @@ import noverlin.fitness.model.User;
 import noverlin.fitness.model.Workout;
 import noverlin.fitness.repository.UserRepository;
 import noverlin.fitness.repository.WorkoutRepository;
+import noverlin.fitness.specification.WorkoutSpecifications;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,36 +26,12 @@ public class WorkoutService {
     private final WorkoutRepository workoutRepository;
     private final UserRepository userRepository;
     private final WorkoutMapper workoutMapper;
+    private final WorkoutSpecifications workoutSpecifications;
 
     public Page<WorkoutResponse> search(WorkoutSearchRequest searchRequest, Pageable pageable) {
         String username = CurrentUserProvider.getCurrentUsername();
 
-        Specification<Workout> spec = Specification.where(
-                (root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.get("user").get("username"), username)
-        );
-
-        if (searchRequest.getType() != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("type"), searchRequest.getType()));
-        }
-        if (searchRequest.getFromDate() != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.greaterThanOrEqualTo(root.get("date"), searchRequest.getFromDate()));
-        }
-        if (searchRequest.getToDate() != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.lessThanOrEqualTo(root.get("date"), searchRequest.getToDate()));
-        }
-        if (searchRequest.getMinDuration() != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.greaterThanOrEqualTo(root.get("duration"), searchRequest.getMinDuration()));
-        }
-        if (searchRequest.getMaxDuration() != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.lessThanOrEqualTo(root.get("duration"), searchRequest.getMaxDuration()));
-        }
-
+        Specification<Workout> spec = workoutSpecifications.build(username, searchRequest);
         Page<Workout> workouts = workoutRepository.findAll(spec, pageable);
         return workouts.map(workoutMapper::toDto);
     }
