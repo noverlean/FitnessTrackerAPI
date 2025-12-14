@@ -16,22 +16,22 @@ import java.time.Instant;
 public class WorkoutRequest {
 
     @Schema(description = "Название тренировки", example = "Утренняя пробежка")
-    @NotBlank
+    @NotBlank(message = "Title cannot be blank")
     @Size(max = 100)
-    String title;
+    private String title;
 
     @Schema(description = "Время начала тренировки", example = "2025-12-09T12:15:00Z")
-    @PastOrPresent
-    Instant date;
+    @PastOrPresent(message = "Date must be in the past or today")
+    private Instant date;
 
     @Schema(description = "Продолжительность тренировки в миллисекундах", example = "3600000")
-    @Positive
-    Long duration;
+    @Positive(message = "Duration must be > 0")
+    private Long duration;
 
     @Schema(description = "Количестко сожженых калорий", example = "434")
-    @Positive
-    Long calories;
+    @Positive(message = "Calories must be > 0")
+    private Long calories;
 
     @Schema(description = "Тип тренировки", example = "CARDIO")
-    WorkoutType type;
+    private WorkoutType type;
 }

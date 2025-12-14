@@ -1,79 +1,52 @@
 package noverlin.fitness.service;
 
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
-import noverlin.fitness.exceptions.custom.access.exceptions.UserHasNotAccessRulesException;
-import noverlin.fitness.exceptions.custom.notFound.exceptions.UserNotFoundException;
-import noverlin.fitness.exceptions.custom.notFound.exceptions.WorkoutNotFoundException;
+import noverlin.fitness.dto.workout.WorkoutSearchRequest;
+import noverlin.fitness.exceptions.custom.access.UserHasNotAccessRulesException;
+import noverlin.fitness.exceptions.custom.notFound.UserNotFoundException;
+import noverlin.fitness.exceptions.custom.notFound.WorkoutNotFoundException;
+import noverlin.fitness.jwt.CurrentUserProvider;
 import noverlin.fitness.mapper.WorkoutMapper;
 import noverlin.fitness.model.User;
 import noverlin.fitness.model.Workout;
-import noverlin.fitness.model.WorkoutType;
 import noverlin.fitness.repository.UserRepository;
 import noverlin.fitness.repository.WorkoutRepository;
+import noverlin.fitness.specification.WorkoutSpecifications;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class WorkoutService {
 
-    private WorkoutRepository workoutRepository;
-    private UserRepository userRepository;
-    private WorkoutMapper workoutMapper;
+    private final WorkoutRepository workoutRepository;
+    private final UserRepository userRepository;
+    private final WorkoutMapper workoutMapper;
+    private final WorkoutSpecifications workoutSpecifications;
 
-    public Page<WorkoutResponse> search(
-            @NotNull String username,
-            WorkoutType type,
-            Instant fromDate,
-            Instant toDate,
-            Long minDuration,
-            Long maxDuration,
-            Pageable pageable
-    ) {
-        Specification<Workout> spec = Specification.where(
-                (root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.get("user").get("username"), username)
-        );
+    public Page<WorkoutResponse> search(WorkoutSearchRequest searchRequest, Pageable pageable) {
+        String username = CurrentUserProvider.getCurrentUsername();
 
-        if (type != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("type"), type));
-        }
-        if (fromDate != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.greaterThanOrEqualTo(root.get("date"), fromDate));
-        }
-        if (toDate != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.lessThanOrEqualTo(root.get("date"), toDate));
-        }
-        if (minDuration != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.greaterThanOrEqualTo(root.get("duration"), minDuration));
-        }
-        if (maxDuration != null) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.lessThanOrEqualTo(root.get("duration"), maxDuration));
-        }
-
+        Specification<Workout> spec = workoutSpecifications.build(username, searchRequest);
         Page<Workout> workouts = workoutRepository.findAll(spec, pageable);
         return workouts.map(workoutMapper::toDto);
     }
 
-    public WorkoutResponse findById(Long id, String username) {
+    public WorkoutResponse findById(Long id) {
+        String username = CurrentUserProvider.getCurrentUsername();
         Workout workout = workoutRepository.findByIdForUserWithUsername(id, username)
                 .orElseThrow(WorkoutNotFoundException::new);
         return workoutMapper.toDto(workout);
     }
 
-    public WorkoutResponse createForUser(String username, WorkoutRequest workoutRequest) {
+    @Transactional(rollbackOn = Exception.class)
+    public WorkoutResponse createForUser(WorkoutRequest workoutRequest) {
+        String username = CurrentUserProvider.getCurrentUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -84,7 +57,9 @@ public class WorkoutService {
         return workoutMapper.toDto(newWorkout);
     }
 
-    public WorkoutResponse update(Long id, String username, WorkoutRequest workoutRequest) {
+    @Transactional(rollbackOn = Exception.class)
+    public WorkoutResponse update(Long id, WorkoutRequest workoutRequest) {
+        String username = CurrentUserProvider.getCurrentUsername();
         Workout workout = workoutRepository.findById(id)
                 .orElseThrow(WorkoutNotFoundException::new);
 
@@ -98,7 +73,9 @@ public class WorkoutService {
         return workoutMapper.toDto(workout);
     }
 
-    public void delete(Long id, String username) {
+    @Transactional(rollbackOn = Exception.class)
+    public void delete(Long id) {
+        String username = CurrentUserProvider.getCurrentUsername();
         Workout workout = workoutRepository.findById(id)
                 .orElseThrow(WorkoutNotFoundException::new);
 

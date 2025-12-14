@@ -2,10 +2,12 @@ package noverlin.fitness.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import noverlin.fitness.dto.auth.TokenPair;
 import noverlin.fitness.exceptions.custom.ConflictException;
-import noverlin.fitness.exceptions.custom.token.exceptions.InvalidRefreshTokenException;
-import noverlin.fitness.exceptions.custom.notFound.exceptions.UserNotFoundException;
+import noverlin.fitness.exceptions.custom.token.InvalidRefreshTokenException;
+import noverlin.fitness.exceptions.custom.notFound.UserNotFoundException;
 import noverlin.fitness.jwt.JwtTokenProvider;
 import noverlin.fitness.jwt.TokenHash;
 import noverlin.fitness.model.RefreshToken;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Set;
 
+@RequiredArgsConstructor
 @Service
 public class AuthService {
     private final UserRepository userRepository;
@@ -31,18 +34,7 @@ public class AuthService {
     @Value(value = "${jwt.refresh.expiration}")
     private Long refreshExpMillis;
 
-    public AuthService(UserRepository userRepository,
-                       RefreshTokenRepository refreshTokenRepository,
-                       JwtTokenProvider jwtTokenProvider,
-                       TokenHash tokenHash,
-                       PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.refreshTokenRepository = refreshTokenRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.tokenHash = tokenHash;
-        this.passwordEncoder = passwordEncoder;
-    }
-
+    @Transactional(rollbackOn = Exception.class)
     public TokenPair register(String username, String rawPassword, String deviceId) {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new ConflictException("Username already exists");
@@ -67,6 +59,7 @@ public class AuthService {
         return getTokenPair(deviceId, user);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public TokenPair refresh(String refreshToken) {
         Jws<Claims> jws = jwtTokenProvider.parse(refreshToken);
         Claims claims = jws.getBody();

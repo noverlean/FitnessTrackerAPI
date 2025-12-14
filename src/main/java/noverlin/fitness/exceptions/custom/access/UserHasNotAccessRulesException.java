@@ -1,6 +1,4 @@
-package noverlin.fitness.exceptions.custom.access.exceptions;
-
-import noverlin.fitness.exceptions.custom.access.AccessRightsException;
+package noverlin.fitness.exceptions.custom.access;
 
 public class UserHasNotAccessRulesException extends AccessRightsException {
     public UserHasNotAccessRulesException() {

@@ -24,20 +24,16 @@ public class Workout {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false, length = 100)
-    @NotBlank(message = "Title cannot be blank")
+    @Column(nullable = false)
     private String title;
 
     @Column
-    @PastOrPresent(message = "Date must be in the past or today")
     private Instant date;
 
     @Column(nullable = false)
-    @Positive(message = "Duration must be > 0")
     private Long duration;
 
     @Column(nullable = false)
-    @Positive(message = "Calories must be > 0")
     private Long calories;
 
     @Enumerated(EnumType.STRING)

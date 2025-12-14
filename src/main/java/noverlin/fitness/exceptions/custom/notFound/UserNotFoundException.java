@@ -1,6 +1,4 @@
-package noverlin.fitness.exceptions.custom.notFound.exceptions;
-
-import noverlin.fitness.exceptions.custom.notFound.NotFoundException;
+package noverlin.fitness.exceptions.custom.notFound;
 
 public class UserNotFoundException extends NotFoundException {
     public UserNotFoundException() {

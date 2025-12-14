@@ -2,9 +2,9 @@ package noverlin.fitness.service;
 
 import noverlin.fitness.dto.workout.WorkoutRequest;
 import noverlin.fitness.dto.workout.WorkoutResponse;
-import noverlin.fitness.exceptions.custom.access.exceptions.UserHasNotAccessRulesException;
-import noverlin.fitness.exceptions.custom.notFound.exceptions.UserNotFoundException;
-import noverlin.fitness.exceptions.custom.notFound.exceptions.WorkoutNotFoundException;
+import noverlin.fitness.exceptions.custom.access.UserHasNotAccessRulesException;
+import noverlin.fitness.exceptions.custom.notFound.UserNotFoundException;
+import noverlin.fitness.exceptions.custom.notFound.WorkoutNotFoundException;
 import noverlin.fitness.mapper.WorkoutMapper;
 import noverlin.fitness.model.User;
 import noverlin.fitness.model.Workout;
@@ -14,6 +14,10 @@ import noverlin.fitness.repository.WorkoutRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -59,6 +63,16 @@ class WorkoutServiceTest {
         workoutResponse = new WorkoutResponse();
         workoutResponse.setId(10L);
         workoutResponse.setTitle("Morning Run");
+
+        SecurityContextHolder.clearContext();
+        UserDetails userDetails = org.springframework.security.core.userdetails.User
+                .withUsername("testuser")
+                .password("password")
+                .authorities("ROLE_USER")
+                .build();
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
     @Test
@@ -67,7 +81,7 @@ class WorkoutServiceTest {
                 .thenReturn(Optional.of(workout));
         when(workoutMapper.toDto(workout)).thenReturn(workoutResponse);
 
-        WorkoutResponse result = workoutService.findById(10L, "testuser");
+        WorkoutResponse result = workoutService.findById(10L);
 
         assertEquals("Morning Run", result.getTitle());
         verify(workoutRepository).findByIdForUserWithUsername(10L, "testuser");
@@ -79,7 +93,7 @@ class WorkoutServiceTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(WorkoutNotFoundException.class,
-                () -> workoutService.findById(10L, "testuser"));
+                () -> workoutService.findById(10L));
     }
 
     @Test
@@ -91,7 +105,7 @@ class WorkoutServiceTest {
         when(workoutMapper.toModel(request)).thenReturn(workout);
         when(workoutMapper.toDto(workout)).thenReturn(workoutResponse);
 
-        WorkoutResponse result = workoutService.createForUser("testuser", request);
+        WorkoutResponse result = workoutService.createForUser(request);
 
         assertEquals("Morning Run", result.getTitle());
         verify(workoutRepository).save(workout);
@@ -103,7 +117,7 @@ class WorkoutServiceTest {
         when(userRepository.findByUsername("unknown")).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
-                () -> workoutService.createForUser("unknown", request));
+                () -> workoutService.createForUser(request));
     }
 
     @Test
@@ -114,7 +128,7 @@ class WorkoutServiceTest {
         when(workoutRepository.findById(10L)).thenReturn(Optional.of(workout));
         when(workoutMapper.toDto(workout)).thenReturn(workoutResponse);
 
-        WorkoutResponse result = workoutService.update(10L, "testuser", request);
+        WorkoutResponse result = workoutService.update(10L, request);
 
         verify(workoutMapper).updateModelFromDto(request, workout);
         verify(workoutRepository).save(workout);
@@ -127,7 +141,7 @@ class WorkoutServiceTest {
         when(workoutRepository.findById(10L)).thenReturn(Optional.empty());
 
         assertThrows(WorkoutNotFoundException.class,
-                () -> workoutService.update(10L, "testuser", request));
+                () -> workoutService.update(10L, request));
     }
 
     @Test
@@ -140,14 +154,14 @@ class WorkoutServiceTest {
         when(workoutRepository.findById(10L)).thenReturn(Optional.of(workout));
 
         assertThrows(UserHasNotAccessRulesException.class,
-                () -> workoutService.update(10L, "testuser", request));
+                () -> workoutService.update(10L, request));
     }
 
     @Test
     void delete_ShouldDeleteWorkout() {
         when(workoutRepository.findById(10L)).thenReturn(Optional.of(workout));
 
-        workoutService.delete(10L, "testuser");
+        workoutService.delete(10L);
 
         verify(workoutRepository).delete(workout);
     }
@@ -157,7 +171,7 @@ class WorkoutServiceTest {
         when(workoutRepository.findById(10L)).thenReturn(Optional.empty());
 
         assertThrows(WorkoutNotFoundException.class,
-                () -> workoutService.delete(10L, "testuser"));
+                () -> workoutService.delete(10L));
     }
 
     @Test
@@ -169,7 +183,7 @@ class WorkoutServiceTest {
         when(workoutRepository.findById(10L)).thenReturn(Optional.of(workout));
 
         assertThrows(UserHasNotAccessRulesException.class,
-                () -> workoutService.delete(10L, "testuser"));
+                () -> workoutService.delete(10L));
     }
 }
 

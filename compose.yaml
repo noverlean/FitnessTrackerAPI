@@ -19,7 +19,7 @@ services:
     container_name: fitness_app
     restart: always
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/fitness_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/fitness_db
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: 12345678
     depends_on:
